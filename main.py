@@ -24,7 +24,7 @@ class App(QtWidgets.QMainWindow):
         self.setGeometry(200, 200, 300, 300)
         self.setFixedSize(300, 300)
 
-        self.centralWidget = QtWidgets.QWidget(self)
+        self.centralWidget = QtWidgets.QWidget()
         self.setCentralWidget(self.centralWidget)
 
         self.mainGrid = QtWidgets.QVBoxLayout()
@@ -34,21 +34,50 @@ class App(QtWidgets.QMainWindow):
 
 
     def renderUi(self):
+
+        __checkbox_style = """
+        QCheckBox {
+
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            padding: 4px;
+            background-color: #222;
+            color: white;
+        }
+        QCheckBox::indicator {
+            width: 16px;
+            height: 16px;
+        }
+        """
+
         poemInput = QTextEdit()
         self.mainGrid.addWidget(poemInput)
 
         self.clipboardCkeckBox = QtWidgets.QCheckBox(strings.clipbrdckbox)
+        self.logToFileCheckBox = QtWidgets.QCheckBox(strings.logToFileCheckBox) 
+
+
+        # self.clipboardCkeckBox.setStyleSheet(checkbox_style)
+        # self.logToFileCheckBox.setStyleSheet(checkbox_style)
+        
         self.clipboardCkeckBox.setChecked(True)
+        self.logToFileCheckBox.setChecked(False)
+
         leftCopyButton = QPushButton(strings.leftBtn) 
         rightCopyButton = QPushButton(strings.rightBtn)
-        self.lineCfg = QtWidgets.QComboBox()
-        self.lineCfg.addItems(strings.options.values())
+
+        ckeckBoxesLayout = QtWidgets.QVBoxLayout()
 
         hButonsLayout = QtWidgets.QHBoxLayout()
         hButonsLayout.addWidget(leftCopyButton)
         hButonsLayout.addWidget(rightCopyButton)
-        hButonsLayout.addWidget(self.clipboardCkeckBox)
-        self.mainGrid.addWidget(self.lineCfg)
+        
+        hButonsLayout.addLayout(ckeckBoxesLayout)
+        
+        ckeckBoxesLayout.addWidget(self.clipboardCkeckBox)
+        ckeckBoxesLayout.addWidget(self.logToFileCheckBox)
+
+
         self.mainGrid.addLayout(hButonsLayout)
 
         leftCopyButton.clicked.connect(lambda: self.processText(poemInput.toPlainText(), 'left'))
@@ -56,27 +85,26 @@ class App(QtWidgets.QMainWindow):
 
         dbg("Rendering UI: renderUi()")
 
-
     def processText(self, text: str, side: str):
-        import re
         lines = text.split('\n')
         result_lines = []
-        if self.lineCfg.currentText() == strings.options.get("twoParts"):
-            dbg(strings.options.get("twoParts"))
-            for line in lines:
-                match = re.match(r'^(.*?)\s*(?:\s{2,}|\.+|~+|-+|=+)\s*(.*)$', line)
-                if not match:
-                    continue  # skip if line doesn't match
+
+        for lineNumber, line in enumerate(lines):
+            match = re.match(r'^(.*?)\s*(?:\s{2,}|\.+|~+|-+|=+)\s*(.*)$', line)
+
+            if match:
                 right, left = match.group(1).strip(), match.group(2).strip()
                 result_lines.append(left if side == 'left' else right)
-        
-        if self.lineCfg.currentText() == strings.options.get("oneParts"):
-            pass
+            else:
+                # If no match, decide based on line number and side
+                if lineNumber % 2 == (1 if side == 'left' else 0):
+                    result_lines.append(line)
+
         final_output = '\n'.join(result_lines)
-        
+
         if self.clipboardCkeckBox.isChecked():
             QtWidgets.QApplication.clipboard().setText(final_output)
-        
+
         dbg(final_output, "\n--- Copied to Clipboard ---")
 
 

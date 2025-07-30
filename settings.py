@@ -13,11 +13,8 @@ class Strings():
         self.windowTitle = ["Poem Septeractor", "مُقسِم الشطور"][lang]
         self.leftBtn  = ["Copy left", "نسخ الأيسر"][lang]
         self.rightBtn = ["Copy right", "نسخ الأيمن"][lang]
-        self.clipbrdckbox = ["to clipboard", "انسخ إلى الحافظة"][lang]
-
-        self.options = {
-            "twoParts" : ["two parts each", "شطرين في كل سطر"][lang],
-            "onePart" : ["each part on a line", "شطر في كل سطر"][lang],
-        }
+        self.clipbrdckbox = ["to clipboard", "إلى الحافظة"][lang]
+        self.logToFileCheckBox = ["Log to file", "في ملف"][lang]
+        self.ckeckBoxesLayout = ["output", "النتيجه"][lang]
 
 strings = Strings(1)
