@@ -1,10 +1,10 @@
 # here you can change some app settings
 
-debugMode = True
+debugMode = False
 
 def dbg(*args, **kwargs):
     if debugMode is True:
-        print(*args, **kwargs)
+        print("\033[33m\033[1m", *args, "\033[0m", **kwargs)
 
 
 class Strings():
