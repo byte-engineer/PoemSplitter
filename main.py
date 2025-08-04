@@ -16,7 +16,6 @@ import re
 #> uv run python main.py
 
 
-
 class App(QtWidgets.QMainWindow):
 
     def __init__(self):
@@ -255,6 +254,7 @@ def main():
     win.show()
     sys.exit(app.exec())
     dbg("Done . . .")
+
 
 if __name__ == "__main__":
     main()
