@@ -27,8 +27,8 @@ class App(QtWidgets.QMainWindow):
 
     def initUi(self):
         self.setWindowTitle(strings.windowTitle)
-        self.setGeometry(200, 200, 300, 300)
-        self.setFixedSize(300, 300)
+        self.setGeometry(250, 250, 350, 350)
+        self.setFixedSize(350, 350)
 
         self.centralWidget = QtWidgets.QWidget()
         self.setCentralWidget(self.centralWidget)
@@ -41,42 +41,30 @@ class App(QtWidgets.QMainWindow):
 
     def renderUi(self):
 
-
-        ckeckBoxesLayout = QtWidgets.QVBoxLayout()
-
         # main Text Edit
         self.poemInput = QTextEdit()
 
-        # TODO
-        BottomGridLayout = QtWidgets.QGridLayout(self)
-        
+        self.bottomGridLayout = QtWidgets.QGridLayout(self)    # Bottom grid layout
+
+        leftCopyButton  = QPushButton(strings.leftBtn) 
+        rightCopyButton = QPushButton(strings.rightBtn)
+        copyAsTable     = QPushButton(strings.copyAsTable)
+
+        self.clipboardCheckBox = QtWidgets.QCheckBox(strings.clipbrdckbox)
+        self.logToFileCheckBox = QtWidgets.QCheckBox(strings.logToFileCheckBox)         
 
         self.mainGrid.addWidget(self.poemInput)
+        self.mainGrid.addLayout(self.bottomGridLayout)
 
-        # clipBoard chk box 
-        self.clipboardCheckBox = QtWidgets.QCheckBox(strings.clipbrdckbox)
-        self.clipboardCheckBox.setChecked(True if not debugMode else False)
-        
-        self.logToFileCheckBox = QtWidgets.QCheckBox(strings.logToFileCheckBox) 
-        self.logToFileCheckBox.setChecked(False)
+        self.bottomGridLayout.addWidget(leftCopyButton, 1, 1)
+        self.bottomGridLayout.addWidget(rightCopyButton, 1, 2)
+        self.bottomGridLayout.addWidget(self.clipboardCheckBox, 1, 3)
+        self.bottomGridLayout.addWidget(self.logToFileCheckBox, 2, 3)
+        self.bottomGridLayout.addWidget(copyAsTable, 2, 1, 1, 2)
 
-        leftCopyButton = QPushButton(strings.leftBtn) 
-        rightCopyButton = QPushButton(strings.rightBtn)
-
-        hButonsLayout = QtWidgets.QHBoxLayout()
-        hButonsLayout.addWidget(leftCopyButton)
-        hButonsLayout.addWidget(rightCopyButton)
-        hButonsLayout.addLayout(ckeckBoxesLayout)      # Two chk boxs 
-
-        # Adding the chk boxes
-        ckeckBoxesLayout.addWidget(self.clipboardCheckBox) 
-        ckeckBoxesLayout.addWidget(self.logToFileCheckBox)
-
-
-        self.mainGrid.addLayout(hButonsLayout)
-
-        leftCopyButton.clicked.connect(lambda: self.processText(self.poemInput.toPlainText(), 'left'))
+        leftCopyButton.clicked.connect (lambda: self.processText(self.poemInput.toPlainText(), 'left'))
         rightCopyButton.clicked.connect(lambda: self.processText(self.poemInput.toPlainText(), 'right'))
+        copyAsTable.clicked.connect(self.copyAsTableimpl)
 
         dbg("Rendering UI: renderUi()")
 
@@ -117,6 +105,76 @@ class App(QtWidgets.QMainWindow):
         if self.clipboardCheckBox.isChecked():
             QtWidgets.QApplication.clipboard().setText(final_output)
             dbg(final_output, "\n--- Copied to Clipboard ---")
+
+
+    def _copyAsTableimpl(self):
+        
+        dbg('copyAsTableimpl')
+        lines = self.poemInput.toPlainText().split('\n')
+        ResultLines = []
+        finalLineString = []
+
+        rightLine = None
+
+        for lineNumber, line in enumerate(lines):
+            match = re.match(r'^(.*?)\s*(?:\s{2,}|\.+|~+|-+|=+)\s*(.*)$', line)
+
+            if match:
+                dbg(f"Matched '{match.group()}' at index {match.start()} to {match.end()}")
+                pair = (match.group(2).strip(), match.group(1).strip())
+                ResultLines.append(pair)
+
+            else:
+                if lineNumber % 2 == 1:
+                    rightLine = line if line else '?'
+                elif lineNumber % 2 == 0:
+                    ResultLines.append((rightLine, line))
+                else:
+                    ResultLines = '?'
+                    dbg("WTF")
+
+        for rhtLn, lftLn in ResultLines:
+            finalLineString.append(rhtLn + '\t' + lftLn)
+
+        QtWidgets.QApplication.clipboard().setText('\n'.join(finalLineString))
+        dbg('\n'.join(finalLineString))
+        dbg("--- text Copied ---")
+
+
+    def copyAsTableimpl(self):
+        dbg('copyAsTableimpl')
+
+        lines = self.poemInput.toPlainText().split('\n')
+        ResultLines = []
+        finalLineString = []
+
+        rightLine = None
+
+        for lineNumber, line in enumerate(lines):
+            match = re.match(r'^(.*?)\s*(?:\s{2,}|\.+|~+|-+|=+)\s*(.*)$', line)
+
+            if match:
+                dbg(f"Matched '{match.group()}' at index {match.start()} to {match.end()}")
+                # Assuming left side is match.group(1), right is match.group(2)
+                left = match.group(1).strip()
+                right = match.group(2).strip()
+                ResultLines.append((right, left))  # Swap if intentional
+            else:
+                if lineNumber % 2 == 0:
+                    rightLine = line.strip() if line.strip() else '?'
+                elif lineNumber % 2 == 1:
+                    leftLine = line.strip() if line.strip() else '?'
+                    if rightLine is None:
+                        rightLine = '?'
+                    ResultLines.append((leftLine, rightLine))
+
+        for rhtLn, lftLn in ResultLines:
+            finalLineString.append(rhtLn + '\t' + lftLn)
+
+        QtWidgets.QApplication.clipboard().setText('\n'.join(finalLineString))
+        dbg('\n'.join(finalLineString))
+        dbg("--- text Copied ---")
+
 
 
     def highlight_lines(self, mode='even'):    # mode can be 'even' or 'odd'

@@ -1,6 +1,6 @@
 # here you can change some app settings
 
-debugMode = False
+debugMode = True
 
 def dbg(*args, **kwargs):
     if debugMode is True:
@@ -16,5 +16,6 @@ class Strings():
         self.clipbrdckbox = ["to clipboard", "إلى الحافظة"][lang]
         self.logToFileCheckBox = ["Log to file", "في ملف"][lang]
         self.ckeckBoxesLayout = ["output", "النتيجه"][lang]
+        self.copyAsTable = ["Copy as table", "نسخ كجدول"][lang]
 
-strings = Strings(1)
+strings = Strings(1 if not debugMode else 0)
