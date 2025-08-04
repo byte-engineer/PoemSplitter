@@ -161,11 +161,11 @@ class App(QtWidgets.QMainWindow):
                 ResultLines.append((right, left))  # Swap if intentional
             else:
                 if lineNumber % 2 == 0:
-                    rightLine = line.strip() if line.strip() else '?'
+                    rightLine = line.strip() if line.strip() else '???'
                 elif lineNumber % 2 == 1:
-                    leftLine = line.strip() if line.strip() else '?'
+                    leftLine = line.strip() if line.strip() else '???'
                     if rightLine is None:
-                        rightLine = '?'
+                        rightLine = '???'
                     ResultLines.append((leftLine, rightLine))
 
         for rhtLn, lftLn in ResultLines:

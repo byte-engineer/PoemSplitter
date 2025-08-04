@@ -1,6 +1,6 @@
 # here you can change some app settings
 
-debugMode = True
+debugMode = False
 
 def dbg(*args, **kwargs):
     if debugMode is True:
