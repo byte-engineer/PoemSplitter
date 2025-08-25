@@ -1,6 +1,5 @@
-# Poem Splitter & Highlighter (PyQt6)
-
-A tiny, fast PyQt6 desktop tool that lets you paste paired lines (e.g., bilingual verses or Q&A), split them into **left** / **right** sides, optionally **copy** the result or a **tabular** version, and visually **highlight** matched parts or alternating lines.
+# Poem Splitter
+A tiny, PyQt6 desktop tool that lets you paste paired lines (e.g., bilingual verses or Q&A), split them into **left** / **right** sides, optionally **copy** the result or a **tabular** version, and visually **highlight** matched parts or alternating lines.
 
 ---
 
@@ -65,3 +64,4 @@ MIT — do whatever you want, just keep the notice.
 - Remember last options (checkbox states)
 
 - Per-side preview panes
+
